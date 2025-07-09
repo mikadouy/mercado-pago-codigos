@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Compra código único</title>
+  <script
+    src="https://sdk.mercadopago.com/js/v2"
+    data-client-id="TU_CLIENT_ID"
+  ></script>
+</head>
+<body>
+  <h1>Comprar código único</h1>
+  <button id="checkout-btn">Comprar porcion</button>
+
+  <script>
+    const mp = new MercadoPago('TU_PUBLIC_KEY', { locale: 'es-AR' });
+
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      fetch('/create_preference', { method: 'POST' })
+        .then(res => res.json())
+        .then(({ id }) => {
+          mp.checkout({
+            preference: { id },
+            autoOpen: true
+          });
+        })
+        .catch(console.error);
+    });
+  </script>
+</body>
+</html>
