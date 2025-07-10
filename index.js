@@ -1,41 +1,70 @@
-const express = require('express');
-const fs = require('fs');
+import express from "express";
+import fs from "fs/promises";
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
-function obtenerYEliminarPrimerCodigo(path) {
-    try {
-        const data = fs.readFileSync(path, 'utf-8');
-        const codigos = data.split('\n').filter(c => c.trim() !== '');
-        if (codigos.length === 0) return null;
-
-        const primerCodigo = codigos.shift();
-        fs.writeFileSync(path, codigos.join('\n'));
-        return primerCodigo;
-    } catch (err) {
-        console.error('Error leyendo o escribiendo el archivo:', err);
-        return null;
-    }
+// Función para leer archivo y devolver arreglo de códigos
+async function leerCodigosArchivo(path) {
+  const contenido = await fs.readFile(path, "utf-8");
+  return contenido.split("\n").filter(line => line.trim() !== "");
 }
 
-app.get('/FKDJG28374HGKSLAJWUE', (req, res) => {
-    const codigo = obtenerYEliminarPrimerCodigo('codigos.txt');
-    if (!codigo) return res.status(404).send('No hay más códigos disponibles');
-    res.send(codigo);
+// Ruta raíz: redirige a uno de los links con código (ejemplo: el principal)
+app.get("/", (req, res) => {
+  // Cambia esta URL a la que quieras que redirija al entrar a /
+  const redirectUrl = "https://codigos-api-bm3z.onrender.com/FKDJG28374HGKSLAJWUE";
+  res.redirect(redirectUrl);
 });
 
-app.get('/FKDJG28374HGKSLAJWUF', (req, res) => {
-    const codigo = obtenerYEliminarPrimerCodigo('codigosmenor.txt');
-    if (!codigo) return res.status(404).send('No hay más códigos disponibles');
-    res.send(codigo);
+// Ruta para codigos.txt
+app.get("/FKDJG28374HGKSLAJWUE", async (req, res) => {
+  try {
+    const codigos = await leerCodigosArchivo("codigos.txt");
+    const codigo = codigos[Math.floor(Math.random() * codigos.length)];
+    res.send(`
+      <div style="font-family: Arial, sans-serif; text-align:center; margin-top:50px;">
+        <p>Tu código es:</p>
+        <p style="font-weight:bold; font-size:24px;">${codigo}</p>
+      </div>
+    `);
+  } catch (error) {
+    res.status(500).send("Error leyendo codigos.txt");
+  }
 });
 
-app.get('/FKDJG28374HGKSLAJWUG', (req, res) => {
-    const codigo = obtenerYEliminarPrimerCodigo('codigosmonedas.txt');
-    if (!codigo) return res.status(404).send('No hay más códigos disponibles');
-    res.send(codigo);
+// Ruta para codigosmenor.txt
+app.get("/FKDJG28374HGKSLAJWUF", async (req, res) => {
+  try {
+    const codigos = await leerCodigosArchivo("codigosmenor.txt");
+    const codigo = codigos[Math.floor(Math.random() * codigos.length)];
+    res.send(`
+      <div style="font-family: Arial, sans-serif; text-align:center; margin-top:50px;">
+        <p>Tu código es:</p>
+        <p style="font-weight:bold; font-size:24px;">${codigo}</p>
+      </div>
+    `);
+  } catch (error) {
+    res.status(500).send("Error leyendo codigosmenor.txt");
+  }
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
+// Ruta para codigosmonedas.txt
+app.get("/FKDJG28374HGKSLAJWUG", async (req, res) => {
+  try {
+    const codigos = await leerCodigosArchivo("codigosmonedas.txt");
+    const codigo = codigos[Math.floor(Math.random() * codigos.length)];
+    res.send(`
+      <div style="font-family: Arial, sans-serif; text-align:center; margin-top:50px;">
+        <p>Tu código es:</p>
+        <p style="font-weight:bold; font-size:24px;">${codigo}</p>
+      </div>
+    `);
+  } catch (error) {
+    res.status(500).send("Error leyendo codigosmonedas.txt");
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Servidor corriendo en puerto ${port}`);
 });
