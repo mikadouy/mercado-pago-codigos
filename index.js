@@ -24,13 +24,21 @@ app.get("/:secretCode", async (req, res, next) => {
   // Si la URL es uno de los tokens secretos
   if (archivos[secretCode]) {
     try {
-      const codigos = await leerCodigosArchivo(archivos[secretCode]);
-      const codigo = codigos[Math.floor(Math.random() * codigos.length)];
+      const rutaArchivo = archivos[secretCode];
+      const codigos = await leerCodigosArchivo(rutaArchivo);
+
+      if (codigos.length === 0) {
+        return res.status(404).send("No hay más códigos disponibles.");
+      }
+
+      const codigo = codigos[0]; // Primer código
+      const codigosRestantes = codigos.slice(1); // El resto
+      await fs.writeFile(rutaArchivo, codigosRestantes.join("\n")); // Reescribir sin el primero
 
       // Redirigir a /CODIGO para que cambie la URL en el navegador
       return res.redirect(`/${codigo}`);
     } catch (error) {
-      return res.status(500).send("Error leyendo el archivo de códigos.");
+      return res.status(500).send("Error leyendo o escribiendo el archivo de códigos.");
     }
   }
 
@@ -41,13 +49,10 @@ app.get("/:secretCode", async (req, res, next) => {
 app.get("/:codigo", (req, res) => {
   const codigo = req.params.codigo;
 
-  // Opcional: validar que el código tenga formato esperado (ejemplo: longitud, caracteres)
-  // Si querés validar, hacerlo acá. Por ahora asumimos que es válido.
-
   res.send(`
-    <div style="font-family: Arial, sans-serif; font-size:48px; text-align:center; margin-top:50px;">
+    <div style="font-family: Arial, sans-serif; text-align:center; margin-top:50px;">
       <p>Tu código es:</p>
-      <p style="font-weight:bold; font-size:48px;">${codigo}</p>
+      <p style="font-weight:bold; font-size:24px;">${codigo}</p>
     </div>
   `);
 });
