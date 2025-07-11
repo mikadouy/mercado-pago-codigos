@@ -50,9 +50,9 @@ app.get("/:codigo", (req, res) => {
   const codigo = req.params.codigo;
 
   res.send(`
-    <div style="font-family: Arial, sans-serif; text-align:center; margin-top:50px;">
+    <div style="font-family: Arial, sans-serif; font-size:48px; text-align:center; margin-top:50px;">
       <p>Tu código es:</p>
-      <p style="font-weight:bold; font-size:24px;">${codigo}</p>
+      <p style="font-weight:bold; font-size:48px;">${codigo}</p>
     </div>
   `);
 });
